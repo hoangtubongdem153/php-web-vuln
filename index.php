@@ -54,8 +54,8 @@ if (!isset($_SESSION['username'])) {
     </header>
     <nav>
         <a href="user-info.php">Thông Tin</a>
-        <a href="post.php">Bài Viết</a>
-        <a href="quanly.php">Quản Lý</a>
+        <a href="blog-user.php">Bài Viết</a>
+        <a href="quanly-post.php">Quản Lý</a>
         <a href="logout.php">Đăng Xuất</a>
     </nav>
     <div class="content">
