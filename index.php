@@ -14,6 +14,7 @@ if (!isset($_SESSION['username'])) {
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Trang Chủ</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.0.0/dist/css/bootstrap.min.css">
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -50,7 +51,7 @@ if (!isset($_SESSION['username'])) {
 </head>
 <body>
     <header>
-        <h1>Web Vuln</h1>
+        <h1>Web Vuln Home Page</h1>
     </header>
     <nav>
         <a href="user-info.php">Thông Tin</a>

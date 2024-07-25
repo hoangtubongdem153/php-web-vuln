@@ -4,7 +4,7 @@ require_once 'connect-db.php'; // Kết nối đến cơ sở dữ liệu
 // Kiểm tra phiên đăng nhập
 session_start();
 if (!isset($_SESSION['username'])) {
-    header('Location: dangnhap.php');
+    header('Location: welcome.php');
     exit;
 }
 
@@ -12,13 +12,9 @@ $username = $_SESSION['username'];
 
 // Kiểm tra quyền admin
 $is_admin = false;
-$sql = "SELECT role FROM user WHERE username = '$username'";
-$result = $conn->query($sql);
-if ($result->num_rows > 0) {
-    $row = $result->fetch_assoc();
-    if ($row['role'] == 'admin') {
-        $is_admin = true;
-    }
+
+if ($username == 'admin') {
+    $is_admin = true;
 }
 
 // Xử lý tạo bài đăng mới
@@ -52,7 +48,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['delete_post'])) {
 // Xử lý xóa bình luận
 if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['delete_comment'])) {
     $comment_id = intval($_POST['comment_id']);
-    $sql = "DELETE FROM comment WHERE id = '$comment_id'";
+    $sql = "DELETE FROM comment WHERE idcommt = '$comment_id'";
     $conn->query($sql);
     header('Location: quanly-post.php');
     exit;
@@ -70,7 +66,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['edit_post'])) {
 }
 
 // Truy vấn bài đăng của người dùng hiện tại (hoặc tất cả bài đăng nếu là admin)
-$sql = $is_admin ? "SELECT post.*, user.username FROM post JOIN user ON post.id = user.id" : "SELECT post.*, user.username FROM post JOIN user ON post.id = user.id WHERE user.username = '$username'";
+$sql = $is_admin ? "SELECT post., user.username FROM post JOIN user ON post.id = user.id ORDER BY date DESC" : "SELECT post., user.username FROM post JOIN user ON post.id = user.id WHERE user.username = '$username' ORDER BY date DESC";
 $result = $conn->query($sql);
 ?>
 
@@ -79,17 +75,45 @@ $result = $conn->query($sql);
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Quản lý bài đăng</title>
+    <title>Quản lý bài đăng </title>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.0.0/dist/css/bootstrap.min.css">
     <style>
         body {
-            padding: 20px;
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 0;
+        }
+        header {
+            background-color: #333;
+            color: #fff;
+            padding: 10px 0;
+            text-align: center;
+        }
+        nav {
+            background-color: #444;
+            overflow: hidden;
+        }
+        nav a {
+            float: left;
+            display: block;
+            color: #fff;
+            text-align: center;
+            padding: 14px 16px;
+            text-decoration: none;
+        }
+        nav a:hover {
+            background-color: #ddd;
+            color: black;
         }
         .post {
             margin-bottom: 20px;
+            margin-top: 20px;
             padding: 20px;
-            border: 1px solid #ddd;
-            border-radius: 5px;
+            border: 1px solid green;
+            border-radius: 10px;
+            margin-left: 100px;
+            margin-right: 100px;
         }
         .post-title {
             font-size: 24px;
@@ -114,10 +138,18 @@ $result = $conn->query($sql);
     </style>
 </head>
 <body>
+    <header>
+        <h1>Quản lý bài đăng</h1>
+    </header>
+    <nav>
+        <a href="index.php">Trang Chủ</a>
+        <a href="user-info.php">Thông Tin</a>
+        <a href="blog-user.php">Bài Viết</a>
+        <a href="logout.php">Đăng Xuất</a>
+    </nav>
     <div class="container">
-        <h1 class="mb-4">Quản lý bài đăng</h1>
-        <div class="mb-4">
-            <h2>Tạo bài đăng mới</h2>
+        <div class="post-4">
+            <br><h2 style="color: green;">Tạo bài đăng mới</h2><br>
             <form method="POST" action="">
                 <div class="form-group">
                     <label for="title">Tiêu đề</label>
@@ -127,7 +159,9 @@ $result = $conn->query($sql);
                     <label for="content">Nội dung</label>
                     <textarea class="form-control" name="content" rows="3" required></textarea>
                 </div>
-                <button type="submit" class="btn btn-primary" name="create_post">Tạo bài đăng</button>
+                    <button type="submit" class="btn btn-primary" name="create_post">Tạo bài đăng</button>
+                    <a href="index.php" class="btn btn-secondary">Quay lại trang chủ</a>
+                </div>
             </form>
         </div>
         <?php
@@ -142,7 +176,7 @@ $result = $conn->query($sql);
                 $post_id = $row['idpost'];
                 $sql_comments = "SELECT * FROM comment WHERE idpost = '$post_id' ORDER BY date DESC";
                 $result_comments = $conn->query($sql_comments);
-                
+                // tính năng xóa bình luận (commennt)
                 if ($result_comments->num_rows > 0) {
                     while($comment = $result_comments->fetch_assoc()) {
                         echo '<div class="comment">';
@@ -150,7 +184,7 @@ $result = $conn->query($sql);
                         echo '<div class="comment-content">' . nl2br(htmlspecialchars($comment['commt_content'])) . '</div>';
                         if ($is_admin || $username == $comment['user_commt']) {
                             echo '<form method="POST" action="">';
-                            echo '<input type="hidden" name="comment_id" value="' . $comment['id'] . '">';
+                            echo '<input type="hidden" name="comment_id" value="' . $comment['idcommt'] . '">';
                             echo '<button type="submit" class="btn btn-danger btn-sm" name="delete_comment">Xóa bình luận</button>';
                             echo '</form>';
                         }

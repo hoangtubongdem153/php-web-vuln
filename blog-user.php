@@ -25,7 +25,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['comment_content']) && 
 // Truy vấn nội dung từ bảng 'post' và liên kết với bảng 'user' để lấy tên người đăng
 $sql = "SELECT idpost, title, content, date, username 
         FROM post 
-        JOIN user ON post.id = user.id";
+        JOIN user ON post.id = user.id ORDER BY date DESC" ;
 $result = $conn->query($sql);
 ?>
 
@@ -67,13 +67,19 @@ $result = $conn->query($sql);
         }
         .content {
             padding: 20px;
+            margin-left: 50px;
+            margin-right: 50px;
         }
 
         .post {
-            margin-bottom: 20px;
+            /* mấy cái này chỉnh đi chỉnh lại đau đầu vl  */
+            margin-top: 10px;
+            margin-bottom: 10px;
             padding: 20px;
-            border: 1px solid #ddd;
+            border: 1px solid red;
             border-radius: 5px;
+            margin-left: 10px;
+            margin-right: 10px;
         }
         .post-title {
             font-size: 24px;
@@ -111,7 +117,8 @@ $result = $conn->query($sql);
         <?php
             $coloredname = '<span style="color: red;">' . $username . '</span>';
             echo "<h2>Chào mừng $coloredname đến với trang Blog</h2>";
-            
+            $date = date('Y-m-d H:i:s');
+            echo '<span style="color: red;">TODAY </span> ' . $date;
             if ($result->num_rows > 0) {
                 while($row = $result->fetch_assoc()) {
                     echo '<div class="post">';
