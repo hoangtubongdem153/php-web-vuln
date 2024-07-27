@@ -66,7 +66,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['edit_post'])) {
 }
 
 // Truy vấn bài đăng của người dùng hiện tại (hoặc tất cả bài đăng nếu là admin)
-$sql = $is_admin ? "SELECT post., user.username FROM post JOIN user ON post.id = user.id ORDER BY date DESC" : "SELECT post., user.username FROM post JOIN user ON post.id = user.id WHERE user.username = '$username' ORDER BY date DESC";
+$sql = $is_admin ? "SELECT post.*, user.username FROM post JOIN user ON post.id = user.id ORDER BY date DESC" : "SELECT post.*, user.username FROM post JOIN user ON post.id = user.id WHERE user.username = '$username' ORDER BY date DESC";
 $result = $conn->query($sql);
 ?>
 
